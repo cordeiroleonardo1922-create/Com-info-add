@@ -2,6 +2,10 @@
 // RG DIGITAL SP - JavaScript Principal
 // ============================================
 
+// 🔴 VARIÁVEL GLOBAL DO CONTADOR
+let qrInterval = null;
+let qrStartTime = null;
+
 // Estado da aplicação
 const AppState = {
     currentScreen: 'login',
@@ -353,8 +357,15 @@ function setupRGDetailScreen() {
 });
 
     backButton.addEventListener('click', () => {
-        showScreen('wallet');
-    });
+
+    // 🔴 PARA o contador ao sair
+    if (qrInterval) {
+        clearInterval(qrInterval);
+        qrInterval = null;
+    }
+
+    showScreen('wallet');
+});
 
     tabButtons.forEach((button) => {
         button.addEventListener('click', () => {
@@ -582,26 +593,40 @@ function handleSwipe() {
 // ============================================
 
 function iniciarContadorQR() {
-    let tempo = 59;
-    const total = 59;
+    const duracao = 60;
 
     const timer = document.getElementById("qr-timer");
     const barra = document.querySelector(".qr-progress");
 
     if (!timer || !barra) return;
 
-    const intervalo = setInterval(() => {
-        let segundos = tempo < 10 ? "0" + tempo : tempo;
+    // 🔴 só inicia o tempo uma vez
+    if (!qrStartTime) {
+        qrStartTime = Date.now();
+    }
+
+    // limpa intervalo antigo
+    if (qrInterval) {
+        clearInterval(qrInterval);
+    }
+
+    qrInterval = setInterval(() => {
+        const agora = Date.now();
+        const tempoPassado = Math.floor((agora - qrStartTime) / 1000);
+        let tempoRestante = duracao - tempoPassado;
+
+        // reinicia automático quando zera
+        if (tempoRestante <= 0) {
+            qrStartTime = Date.now();
+            tempoRestante = duracao;
+        }
+
+        let segundos = tempoRestante < 10 ? "0" + tempoRestante : tempoRestante;
         timer.textContent = "00:" + segundos;
 
-        let porcentagem = ((total - tempo) / total) * 100;
+        let porcentagem = ((duracao - tempoRestante) / duracao) * 100;
         barra.style.width = porcentagem + "%";
 
-        tempo--;
-
-        if (tempo < 0) {
-    tempo = 59; // reinicia
-}
     }, 1000);
 }
 function atualizarHorario() {
@@ -622,6 +647,9 @@ function atualizarHorario() {
         el.textContent = "Última atualização em: " + formato;
     });
 }
-document.querySelector('.rg-card').addEventListener('click', () => {
-    atualizarHorario();
-});
+const rgCard = document.querySelector('.rg-card');
+if (rgCard) {
+    rgCard.addEventListener('click', () => {
+        atualizarHorario();
+    });
+}
