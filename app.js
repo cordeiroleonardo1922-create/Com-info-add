@@ -619,7 +619,7 @@ function atualizarHorario() {
     const elementos = document.querySelectorAll('.rg-update-text');
 
     elementos.forEach(el => {
-        el.textContent = formato;
+        el.textContent = "Última atualização em: " + formato;
     });
 }
 document.querySelector('.rg-card').addEventListener('click', () => {
