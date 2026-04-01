@@ -590,8 +590,8 @@ body {
 }
 
 .rg-qr-image {
-    width: 440px;
-    height: 440px;
+    width: 260px;
+    height: 260px;
     object-fit: contain;
 }
 
@@ -1635,7 +1635,7 @@ a,
 }
 
 .rg-signature img {
-    width: 440px;
+    width: 260px;
 }
 
 .rg-detail-panel {
